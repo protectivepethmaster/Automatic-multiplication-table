@@ -1,18 +1,6 @@
 # Automatic-multiplication-table
 
-แน่นอนค่ะ! นี่คือการจัดโครงสร้างเนื้อหาสำหรับ **สัปดาห์ที่ 1 / Sprint 1** ของโปรเจกต์ "สมุดรายชื่อติดต่อแบบ Command-Line อย่างง่าย" ในรูปแบบที่เหมาะสำหรับ GitHub ซึ่งประกอบด้วยโค้ดฟังก์ชันการทำงานเต็มรูปแบบสำหรับสัปดาห์นี้และเอกสารประกอบที่เกี่ยวข้อง โดยจะเน้นย้ำส่วนสำคัญเพื่อให้เข้าใจง่ายขึ้นค่ะ
 
----
-
-## การจัดโครงสร้างสำหรับ GitHub: Sprint 1 (สัปดาห์ที่ 1)
-
-โปรเจกต์นี้จะเลียนแบบการทำงานของทีมพัฒนาซอฟต์แวร์จริง โดยแบ่งบทบาทและมีกระบวนการทำงานที่ชัดเจน
-
-### 1. ไฟล์ `README.md` (ภาพรวมโปรเจกต์และ Sprint 1)
-
-จะเป็นไฟล์หลักที่อธิบายภาพรวมของโปรเจกต์และสรุปการทำงานในแต่ละ Sprint
-
-```markdown
 # Simple CLI Contact Book - สมุดรายชื่อติดต่อแบบ Command-Line อย่างง่าย
 
 ## ภาพรวมโปรเจกต์
@@ -43,15 +31,7 @@
 4.  รันคำสั่ง: `python contact_book.py`
 5.  ลองพิมพ์ `quit` (หรือ `Quit`, `QUIT`) และคำสั่งอื่นๆ เพื่อทดสอบ
 
----
 
-### 2. โฟลเดอร์ `docs/` และไฟล์แผนงาน/รายงาน
-
-ภายในโฟลเดอร์ `docs/` จะมีเอกสารประกอบสำหรับแต่ละบทบาทใน Sprint นั้นๆ
-
-#### `docs/sprint_1_planner_plan.md` (แผนงานของ Alex)
-
-```markdown
 # Sprint 1: แผนงาน - Project Planner (Alex)
 
 ## เป้าหมายของ Sprint
@@ -72,11 +52,9 @@
     *   โปรแกรมควรทำงานใน **loop** เพื่อรับคำสั่งจากผู้ใช้ไปเรื่อยๆ จนกว่าจะได้รับคำสั่ง 'quit'
 
 **หมายเหตุถึง Coder (Ben):** โปรดแน่ใจว่าได้เริ่มต้น dictionary สำหรับ `contacts` ไว้แล้ว และ `if` statement สำหรับ 'quit' สามารถจัดการกับ 'Quit' หรือ 'QUIT' ได้
-```
 
-#### `docs/sprint_1_debugger_report.md` (รายงานของ Chloe)
 
-```markdown
+
 # Sprint 1: รายงานการทดสอบ - Debugger (Chloe)
 
 ## เป้าหมายของ Sprint ที่ทดสอบ
@@ -122,39 +100,3 @@
 โค้ดสำหรับ Sprint 1 ทำงานได้ตามข้อกำหนดของ Planner อย่างดีเยี่ยม **ไม่มีข้อผิดพลาดร้ายแรง** ที่ต้องการการแก้ไขเร่งด่วน การใช้ `.lower()` ในการเปรียบเทียบคำสั่ง 'quit' ทำให้โปรแกรมมีความยืดหยุ่นต่อการป้อนข้อมูลของผู้ใช้
 
 **ข้อเสนอแนะเล็กน้อยสำหรับ Planner (Alex):** ในอนาคต อาจจะระบุข้อความ "Invalid command..." ในแผนงานให้ชัดเจนขึ้นสำหรับคำสั่งที่ไม่รู้จัก
-```
-
----
-
-### 3. โฟลเดอร์ `src/` และไฟล์โค้ด Python
-
-ภายในโฟลเดอร์ `src/` จะมีไฟล์โค้ด Python หลัก
-
-#### `src/contact_book.py` (โค้ดสำหรับ Sprint 1)
-
-```python
-# A simple command-line contact book - Sprint 1: Foundation and Quit
-
-# [Planner's Task] Initialize an empty dictionary for contacts
-contacts = {}
-
-# [Planner's Task] Display a welcome message
-print("Welcome to your CLI Contact Book!")
-
-# [Coder's Task] Write the initial while loop for the main program
-while True:
-    # Display options to the user. For Sprint 1, only 'quit' is available.
-    # The .lower() ensures case-insensitivity as tested by Debugger
-    command = input("\nChoose an option: quit\n> ").lower()
-
-    # [Coder's Task] Implement the 'quit' command
-    if command == 'quit':
-        # [Planner's Task] Print a goodbye message
-        print("Goodbye!")
-        break # Exit the while loop, terminating the program
-
-    # Handle invalid commands for now. This will be expanded in later sprints.
-    else:
-        print("Invalid command. Please try again.")
-
-```
