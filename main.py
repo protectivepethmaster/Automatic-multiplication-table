@@ -10,10 +10,10 @@ def get_command_input():
     """Prompts the user for a command and returns it in lowercase."""
     return input("\nกรุณาเลือกคำสั่ง (แสดงตาราง / ออก): ").lower().strip()
 
-def display_multiplication_table(number):
-    """Displays the multiplication table for a given number from 1 to 12."""
+def display_multiplication_table(number, end_number):
+    """Displays the multiplication table for a given number from 1 to end_number."""
     print(f"\n--- ตารางสูตรคูณสำหรับแม่ {number} ---")
-    for i in range(1, 13): # Loop from 1 to 12
+    for i in range(1, end_number + 1):
         print(f"{number} x {i} = {number * i}")
     print("----------------------------------")
 
@@ -26,17 +26,27 @@ def main():
 
         if command == 'ออก' or command == 'quit':
             print("ลาก่อน! ขอบคุณที่ใช้บริการครับ.")
-            break # Exit the main loop and end the program
+            break
         elif command == 'แสดงตาราง' or command == 'show table':
-            while True:
-                num_input = input("กรุณาป้อนตัวเลขสำหรับตารางสูตรคูณ: ").strip()
+            while True:  # loop สำหรับกรอกตัวเลข
                 try:
-                    num = int(num_input) # Attempt to convert input to an integer
-                    display_multiplication_table(num)
-                    break # Break out of the inner loop, return to main menu
+                    num_input = input("กรุณาป้อนตัวเลขสำหรับตารางสูตรคูณ: ").strip()
+                    end_input = input("กรุณาป้อนตัวเลขสิ้นสุดสำหรับตารางสูตรคูณ: ").strip()
+
+                    num = int(num_input)
+                    end_number = int(end_input)
+
+                    # เช็คห้ามเป็น 0 หรือติดลบ
+                    if num <= 0 or end_number <= 0:
+                        raise ValueError("ห้ามใส่เลข 0 หรือค่าติดลบ!")
+
+                    display_multiplication_table(num, end_number)
+                    break  # ออกจาก loop ของการกรอกตัวเลข
+
                 except ValueError:
-                    # Handle non-numeric input gracefully
-                    print("คำเตือน: กรุณาป้อนตัวเลขที่ถูกต้องเท่านั้น")
+                    print("คำเตือน: กรุณาป้อนตัวเลขที่ถูกต้อง และต้องมากกว่า 0 เท่านั้น")
         else:
             print("คำสั่งไม่ถูกต้อง. กรุณาลองอีกครั้ง (แสดงตาราง / ออก).")
 
+if __name__ == "__main__":
+    main()
