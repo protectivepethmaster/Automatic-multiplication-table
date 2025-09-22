@@ -1,35 +1,239 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="th">
 <head>
-    <meta charset="UTF-8">
-    <title>เว็บตารางสูตรคูณ</title>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>โปรแกรมตารางสูตรคูณ (Web)</title>
+  <script src="https://cdn.tailwindcss.com"></script>
 </head>
-<body>
-    <h2>โปรแกรมตารางสูตรคูณ (WebApp)</h2>
-    <form method="post">
-        <label>แม่:</label>
-        <input type="number" name="base" value="7"><br><br>
+<body class="bg-slate-50 min-h-screen p-6">
+  <div class="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-4 gap-6">
+    <!-- Controls -->
+    <div class="md:col-span-1 bg-white p-6 rounded-2xl shadow-lg">
+      <h2 class="text-lg font-semibold mb-3">ตั้งค่า (กรอกตัวเลขเป็นจำนวนเต็ม)</h2>
 
-        <label>ตัวคูณสิ้นสุด:</label>
-        <input type="number" name="end" value="12"><br><br>
+      <label class="block text-sm font-medium">แม่ (สำหรับแสดงตาราง)</label>
+      <input id="base" class="mt-1 block w-full rounded-md border p-2" value="7">
 
-        <label>ช่วงแม่:</label>
-        <input type="number" name="range_start" value="2"> -
-        <input type="number" name="range_end" value="5"><br><br>
+      <label class="block text-sm font-medium mt-3">ตัวคูณสิ้นสุด</label>
+      <input id="end" class="mt-1 block w-full rounded-md border p-2" value="12">
 
-        <label>จำนวนข้อ (quiz):</label>
-        <input type="number" name="quiz_count" value="5"><br><br>
+      <label class="block text-sm font-medium mt-3">ช่วงแม่ (เริ่ม - สิ้นสุด)</label>
+      <div class="flex gap-2 mt-1">
+        <input id="rangeStart" class="block w-1/2 rounded-md border p-2" value="2">
+        <input id="rangeEnd" class="block w-1/2 rounded-md border p-2" value="5">
+      </div>
 
-        <button type="submit" name="mode" value="table">แสดงตาราง (แม่เดียว)</button>
-        <button type="submit" name="mode" value="range">แสดงช่วงแม่</button>
-        <button type="submit" name="mode" value="quiz">โหมด Quiz</button>
-    </form>
+      <label class="block text-sm font-medium mt-3">จำนวนข้อ (quiz)</label>
+      <input id="quizCount" class="mt-1 block w-full rounded-md border p-2" value="5">
 
-    <h3>ผลลัพธ์:</h3>
-    <pre>
-{% for line in result %}
-{{ line }}
-{% endfor %}
-    </pre>
+      <div class="mt-4 space-y-2">
+        <button id="btnShowTable" class="w-full py-2 rounded-xl bg-sky-600 text-white font-medium">แสดงตาราง (แม่เดียว)</button>
+        <button id="btnShowRange" class="w-full py-2 rounded-xl border border-sky-300">แสดงช่วงแม่</button>
+        <button id="btnQuiz" class="w-full py-2 rounded-xl bg-indigo-600 text-white font-medium">โหมดแบบทดสอบ (Quiz)</button>
+        <button id="btnClear" class="w-full py-2 rounded-xl border">ล้างหน้าต่างผลลัพธ์</button>
+      </div>
+
+      <p class="mt-4 text-xs text-gray-600">หมายเหตุ: กรุณากรอกจำนวนเต็มในช่วงที่กำหนด (1-100)</p>
+    </div>
+
+    <!-- Output -->
+    <div class="md:col-span-3 bg-white p-6 rounded-2xl shadow-lg flex flex-col">
+      <div class="flex items-center justify-between mb-3">
+        <h3 class="text-lg font-semibold">ผลลัพธ์</h3>
+        <div class="text-sm text-gray-500">ผลลัพธ์จะแสดงเป็นข้อความแบบคงที่</div>
+      </div>
+
+      <div id="output" class="flex-1 overflow-auto space-y-3 p-2 bg-gray-50 rounded-md font-mono text-sm min-h-[320px]" style="white-space:pre-wrap"></div>
+
+      <div class="mt-3 text-right">
+        <button id="btnCopy" class="px-3 py-1 rounded-md border text-sm">คัดลอกผลลัพธ์</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Quiz Modal -->
+  <div id="quizModal" class="fixed inset-0 z-50 hidden items-center justify-center bg-black/40">
+    <div class="bg-white rounded-2xl p-6 w-full max-w-md shadow-2xl">
+      <h4 id="quizTitle" class="text-lg font-semibold mb-2">คำถาม</h4>
+      <div class="mb-4 text-sm text-gray-700">
+        <div id="quizQuestion" class="font-mono text-xl">3 x 4 = ?</div>
+        <div class="text-xs text-gray-500 mt-1">พิมพ์คำตอบเป็นจำนวนเต็ม หรือพิมพ์ 'ออก' เพื่อยกเลิก</div>
+      </div>
+
+      <input id="quizAnswer" class="w-full rounded-md border p-2 mb-3">
+
+      <div class="flex gap-2 justify-end">
+        <button id="btnCancelQuiz" class="px-3 py-2 rounded-md border">ยกเลิก</button>
+        <button id="btnSubmitAnswer" class="px-3 py-2 rounded-md bg-sky-600 text-white">ส่งคำตอบ</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Constants
+    const MAX_BASE = 100;
+    const MAX_END = 100;
+
+    // Helpers
+    function $(id){return document.getElementById(id)}
+
+    function parseIntInRange(value, name, min=1, max=100){
+      if (value === null || value === undefined || String(value).trim() === '') throw new Error(`กรุณากรอกช่อง ${name}`);
+      const n = Number(String(value).trim());
+      if (!Number.isInteger(n)) throw new Error(`${name} ต้องเป็นจำนวนเต็ม`);
+      if (n < min || n > max) throw new Error(`${name} ต้องอยู่ระหว่าง ${min} ถึง ${max}`);
+      return n;
+    }
+
+    function generateTableLines(number, start_i=1, end_i=12){
+      const lines = [];
+      lines.push(`--- ตารางสูตรคูณสำหรับแม่ ${number} (1 ถึง ${end_i}) ---`);
+      for (let i = start_i; i <= end_i; i++){
+        lines.push(`${String(number).padStart(3)} x ${String(i).padStart(3)} = ${String(number*i).padStart(5)}`);
+      }
+      lines.push('-'.repeat(34));
+      return lines.join('\n');
+    }
+
+    function appendOutput(text){
+      const out = $('output');
+      out.textContent += text + '\n';
+      out.scrollTop = out.scrollHeight;
+    }
+
+    function clearOutput(){
+      $('output').textContent = '';
+    }
+
+    // Event handlers
+    $('btnShowTable').addEventListener('click', ()=>{
+      try{
+        const b = parseIntInRange($('base').value, 'แม่', 1, MAX_BASE);
+        const e = parseIntInRange($('end').value, 'ตัวคูณสิ้นสุด', 1, MAX_END);
+        appendOutput(generateTableLines(b,1,e));
+      }catch(err){ alert(err.message); }
+    });
+
+    $('btnShowRange').addEventListener('click', ()=>{
+      try{
+        let s = parseIntInRange($('rangeStart').value, 'ช่วงเริ่ม',1,MAX_BASE);
+        let e = parseIntInRange($('rangeEnd').value, 'ช่วงสิ้นสุด',1,MAX_BASE);
+        const endMul = parseIntInRange($('end').value, 'ตัวคูณสิ้นสุด',1,MAX_END);
+        if (s > e) [s,e] = [e,s];
+        for (let b = s; b <= e; b++){
+          appendOutput(generateTableLines(b,1,endMul));
+          appendOutput('');
+        }
+      }catch(err){ alert(err.message); }
+    });
+
+    $('btnClear').addEventListener('click', clearOutput);
+
+    $('btnCopy').addEventListener('click', async ()=>{
+      try{
+        await navigator.clipboard.writeText($('output').textContent);
+        alert('คัดลอกผลลัพธ์ไปยัง clipboard แล้ว');
+      }catch(e){ alert('การคัดลอกไม่สำเร็จ'); }
+    });
+
+    // Quiz logic
+    let quizQueue = [];
+    let quizResults = [];
+    let currentIndex = 0;
+
+    function openQuizModal(){ $('quizModal').classList.remove('hidden'); $('quizModal').classList.add('flex'); }
+    function closeQuizModal(){ $('quizModal').classList.add('hidden'); $('quizModal').classList.remove('flex'); }
+
+    $('btnQuiz').addEventListener('click', ()=>{
+      try{
+        let bmin = parseIntInRange($('rangeStart').value, 'แม่ต่ำสุด', 1, MAX_BASE);
+        let bmax = parseIntInRange($('rangeEnd').value, 'แม่สูงสุด', 1, MAX_BASE);
+        if (bmin > bmax) [bmin,bmax] = [bmax,bmin];
+        const endMax = parseIntInRange($('end').value, 'ตัวคูณสูงสุด', 1, MAX_END);
+        const totalQ = parseIntInRange($('quizCount').value, 'จำนวนข้อ', 1, 200);
+
+        quizQueue = [];
+        quizResults = [];
+        for (let i=0;i<totalQ;i++){
+          const a = Math.floor(Math.random()*(bmax-bmin+1)) + bmin;
+          const b = Math.floor(Math.random()*endMax) + 1;
+          quizQueue.push({a,b});
+        }
+        currentIndex = 0;
+        showCurrentQuestion();
+        openQuizModal();
+        $('quizAnswer').value = '';
+        $('quizAnswer').focus();
+      }catch(err){ alert(err.message); }
+    });
+
+    function showCurrentQuestion(){
+      const q = quizQueue[currentIndex];
+      if (!q) return;
+      $('quizTitle').textContent = `คำถามที่ ${currentIndex+1} / ${quizQueue.length}`;
+      $('quizQuestion').textContent = `${String(q.a).padStart(3)} x ${String(q.b).padStart(3)} = ?`;
+    }
+
+    $('btnSubmitAnswer').addEventListener('click', ()=>{
+      const q = quizQueue[currentIndex];
+      if (!q) return;
+      const ans = $('quizAnswer').value.trim();
+      if (ans === ''){
+        quizResults.push({ ...q, res: null, correct: q.a*q.b});
+      } else if (['ออก','quit','exit'].includes(ans.toLowerCase())){
+        alert('ยกเลิกแบบทดสอบ');
+        closeQuizModal();
+        quizQueue = [];
+        return;
+      } else {
+        const n = Number(ans);
+        if (!Number.isInteger(n)) { alert('กรุณาป้อนจำนวนเต็ม (หรือพิมพ์ \'ออก\' เพื่อยกเลิก)'); return; }
+        const correct = q.a * q.b;
+        quizResults.push({ ...q, res: n, correct, isRight: n===correct });
+      }
+
+      currentIndex++;
+      if (currentIndex >= quizQueue.length){
+        // finish
+        closeQuizModal();
+        showQuizSummary();
+        quizQueue = [];
+      } else {
+        $('quizAnswer').value = '';
+        showCurrentQuestion();
+        $('quizAnswer').focus();
+      }
+    });
+
+    $('btnCancelQuiz').addEventListener('click', ()=>{
+      alert('ยกเลิกแบบทดสอบ');
+      closeQuizModal();
+      quizQueue = [];
+    });
+
+    // allow Enter key in modal
+    $('quizAnswer').addEventListener('keydown', (e)=>{ if (e.key === 'Enter'){ e.preventDefault(); $('btnSubmitAnswer').click(); } });
+
+    function showQuizSummary(){
+      const lines = ['--- ผลการทำแบบทดสอบ ---'];
+      let asked = 0, score = 0;
+      for (const r of quizResults){
+        if (r.res === null || r.res === undefined){ lines.push(`${String(r.a).padStart(3)} x ${String(r.b).padStart(3)} = (ไม่รับคำตอบ)`); }
+        else {
+          asked += 1;
+          const isRight = r.isRight === true || r.res === r.correct;
+          if (isRight) score += 1;
+          const resultStr = isRight ? 'ถูก' : `ผิด (คำตอบที่ถูก: ${r.correct})`;
+          lines.push(`${String(r.a).padStart(3)} x ${String(r.b).padStart(3)} = ${String(r.res).padStart(5)}  -> ${resultStr}`);
+        }
+      }
+      if (asked > 0){ const percent = (score/asked)*100; lines.push(`สรุปคะแนน: ${score}/${asked} (${percent.toFixed(1)}%)`); }
+      appendOutput(lines.join('\n'));
+    }
+
+    // initial small hint
+    appendOutput('พร้อมแล้ว — กดปุ่มเพื่อแสดงตารางหรือเริ่มแบบทดสอบ');
+  </script>
 </body>
 </html>
