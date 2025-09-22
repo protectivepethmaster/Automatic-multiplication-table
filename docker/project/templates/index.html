@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <title>เว็บตารางสูตรคูณ</title>
+</head>
+<body>
+    <h2>โปรแกรมตารางสูตรคูณ (WebApp)</h2>
+    <form method="post">
+        <label>แม่:</label>
+        <input type="number" name="base" value="7"><br><br>
+
+        <label>ตัวคูณสิ้นสุด:</label>
+        <input type="number" name="end" value="12"><br><br>
+
+        <label>ช่วงแม่:</label>
+        <input type="number" name="range_start" value="2"> -
+        <input type="number" name="range_end" value="5"><br><br>
+
+        <label>จำนวนข้อ (quiz):</label>
+        <input type="number" name="quiz_count" value="5"><br><br>
+
+        <button type="submit" name="mode" value="table">แสดงตาราง (แม่เดียว)</button>
+        <button type="submit" name="mode" value="range">แสดงช่วงแม่</button>
+        <button type="submit" name="mode" value="quiz">โหมด Quiz</button>
+    </form>
+
+    <h3>ผลลัพธ์:</h3>
+    <pre>
+{% for line in result %}
+{{ line }}
+{% endfor %}
+    </pre>
+</body>
+</html>
