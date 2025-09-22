@@ -5,10 +5,10 @@ from tkinter import ttk, messagebox
 # ค่าคงที่
 MAX_BASE = 100
 MAX_END = 100
-DEFAULT_END = 12
 
 
-def generate_table_lines(number: int, start_i: int = 1, end_i: int = DEFAULT_END):
+
+def generate_table_lines(number, start_i, end_i):
     header = f"--- ตารางสูตรคูณสำหรับแม่ {number} (1 ถึง {end_i}) ---"
     lines = [header]
     for i in range(start_i, end_i + 1):
@@ -43,7 +43,7 @@ class MultiplicationGUI:
         # ตัวคูณสิ้นสุด
         ttk.Label(left, text="ตัวคูณสิ้นสุด:").pack(anchor=tk.W)
         self.entry_end = ttk.Entry(left, width=12)
-        self.entry_end.insert(0, str(DEFAULT_END))
+        self.entry_end.insert(0,"12")
         self.entry_end.pack(pady=(0, 8))
 
         # ช่วงแม่
@@ -198,7 +198,6 @@ class MultiplicationGUI:
 
 if __name__ == '__main__':
     root = tk.Tk()
-    # นำเข้า simpledialog ที่จำเป็นหลังจากสร้าง root
     import tkinter.simpledialog
     app = MultiplicationGUI(root)
     root.mainloop()
